@@ -38,23 +38,21 @@ exports.add_an_item = function(req, res) {
     //how to get the current user, what is the syntax
   
 };
-// Product.findOne(req.body, function(err, task) {
-//   if (err)
-//     res.send(err);
-//   res.json(task);
-// });
-// };
-// var new_cart = new Cart(req.body);
-//   console.log("POST REQUEST: create a product");
-//   new_cart.save(function(err, task) {
-//     if (err)
-//       res.send(err);
-//     res.json(task);
-//   });
-// };
+
+//User has to give the id
+exports.delete_all_cart = function(req, res) {
+  console.log("DELETE REQUEST: delete everything in the cart");
+  Cart.deleteMany({}, function(err, cart) {
+    if (err)
+      res.send(err);
+    res.json({ message: 'Everything in the cart deleted' });
+  });
+};
+
 //User has to give the id
 exports.delete_an_item = function(req, res) {
-  Cart.remove({product_name:(req.body.product_name.toLowerCase())}, function(err, cart) {
+  console.log("DELETE REQUEST: delete one selected product");
+  Cart.deleteOne({product_name:(req.body.product_name.toLowerCase())}, function(err, cart) {
     if (err)
       res.send(err);
     res.json({ message: 'Task successfully deleted' });
