@@ -32,7 +32,7 @@ exports.readTtemDetail = function(req, res) {
   console.log("GET REQUEST: readItemDetail");
   console.log("request as follow");
   console.log(req.params);
-  Product.findOne({product_name:(req.params.product_name)}, function(err, task) {
+  Product.findOne({product_name:(req.params.product_name.toLowerCase())}, function(err, task) {
     if (err)
       res.send(err);
     console.log(task);
