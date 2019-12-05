@@ -54,7 +54,7 @@ exports.add_an_item = function(req, res) {
 // };
 //User has to give the id
 exports.delete_an_item = function(req, res) {
-  Cart.remove(req.body, function(err, cart) {
+  Cart.remove({product_name:(req.body.product_name.toLowerCase())}, function(err, cart) {
     if (err)
       res.send(err);
     res.json({ message: 'Task successfully deleted' });
