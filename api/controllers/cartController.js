@@ -23,10 +23,14 @@ exports.add_an_item = function(req, res) {
     if (err)
       res.send(err);
     // res.json(task.id);
+    console.log(task);
+    console.log(req.body.unit_number);
     var product_from_db = task.product_name;
-    console.log(product_from_db);
-
-    var new_item = new Cart({product_name:product_from_db})
+    var unit = parseInt(req.body.unit_number);
+  
+    // console.log(product_from_db);
+// 
+    var new_item = new Cart({product_name:product_from_db,unit_number:unit})
     // console.log("POST REQUEST: add an item");
     new_item.save(function(err, task) {
       if (err)
