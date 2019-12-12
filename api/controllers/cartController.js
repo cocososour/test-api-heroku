@@ -27,10 +27,11 @@ exports.add_an_item = function(req, res) {
     console.log(req.body.unit_number);
     var product_from_db = task.product_name;
     var unit = parseInt(req.body.unit_number);
+    var sub_total = unit * task.product_price;
   
     // console.log(product_from_db);
 // 
-    var new_item = new Cart({product_name:product_from_db,unit_number:unit})
+    var new_item = new Cart({product_name:product_from_db,unit_number:unit, sub_total: sub_total})
     // console.log("POST REQUEST: add an item");
     new_item.save(function(err, task) {
       if (err)
@@ -43,15 +44,21 @@ exports.add_an_item = function(req, res) {
   
 };
 
+
+// function calculate_cart_price(productArray, unitArray) {
+  
+// }
 //User has to give the id
 exports.delete_all_cart = function(req, res) {
   console.log("DELETE REQUEST: delete everything in the cart");
+  
   Cart.deleteMany({}, function(err, cart) {
     if (err)
       res.send(err);
     res.json({ message: 'Everything in the cart deleted' });
   });
 };
+
 
 //User has to give the id
 exports.delete_an_item = function(req, res) {
