@@ -22,27 +22,94 @@ exports.add_an_item = function(req, res) {
   Product.findOne({product_name:(req.body.product_name.toLowerCase())}, function(err, task) {
     if (err)
       res.send(err);
-    // res.json(task.id);
+    if (task == null) {
+      res.send("No such item in databse");
+      return;
+    }
     console.log(task);
     console.log(req.body.unit_number);
     var product_from_db = task.product_name;
     var unit = parseInt(req.body.unit_number);
     var sub_total = unit * task.product_price;
-  
-    // console.log(product_from_db);
-// 
-    var new_item = new Cart({product_name:product_from_db,unit_number:unit, sub_total: sub_total})
-    // console.log("POST REQUEST: add an item");
-    new_item.save(function(err, task) {
-      if (err)
-        res.send(err);
-      res.json(task);
+
+    var query = { product_name: product_from_db },
+        update = {  $inc: {unit_number : unit, sub_total : sub_total} },
+        options = { upsert: true };
+
+    // Find the document
+    Cart.findOneAndUpdate(query, update, options, function(error, result) {
+        if (!error) {
+            // If the document doesn't exist
+            if (!result) {
+                // Create it
+                console.log("create new cart");
+                result = new Cart({product_name:product_from_db,unit_number:unit, sub_total: sub_total});
+            }
+            res.json(result);
+        }
     });
   });
 
     //how to get the current user, what is the syntax
   
 };
+
+
+
+
+
+
+
+  // console.log(req.body);
+  // Product.findOne({product_name:(req.body.product_name.toLowerCase())}, function(err, task) {
+  //   if (err)
+  //     res.send(err);
+  //   // res.json(task.id);
+  //   console.log(task);
+  //   console.log(req.body.unit_number);
+  //   var product_from_db = task.product_name;
+  //   var unit = parseInt(req.body.unit_number);
+  //   var sub_total = unit * task.product_price;
+  //   // console.log(product_from_db);
+  //   // var product_in_cart = Cart.findOne({product_name:product_from_db})
+
+  // //   Task.findOneAndUpdate({_id: req.params.taskId}, req.body, {new: true}, function(err, task) {
+  // //     if (err)
+  // //       res.send(err);
+  // //     res.json(task);
+  // //   });
+  // // };
+
+  //   Cart.findOne({product_name:product_from_db},function(err, res1) {
+  //     if (err)
+  //     res1.send(err);
+  //     if (res1 == null) {
+  //       console.log(err);
+  //       var new_item = new Cart({product_name:product_from_db,unit_number:unit, sub_total: sub_total});
+  //       new_item.save(function(err1, task1) {
+  //         if (err1)
+  //           res1.send(err);
+  //           console.log(task1);
+           
+            
+  //         // res1.json(task1);
+  //         // return;
+  //       });
+        
+  //       // return;
+  //     }
+  //    // res1.json(task1);
+  //    else {res.unit_number +=unit;
+  //     console.log(res.unit_number);} 
+  //     res.json({ message: 'added' });
+      
+  //       //  res.json();
+  //       // .unit_number
+  //       //  console.log(res.unit_number);
+  //       //返回当前改好的？
+  //   });
+  // });
+
 
 
 // function calculate_cart_price(productArray, unitArray) {

@@ -165,10 +165,11 @@ function get_cart_list(CloudFnResponse) {
                     chat += jsonList[i].unit_number;
                     chat += " unit of "
                     chat += jsonList[i].product_name;
-                    chat += ","
-                    sum_price += (jsonList[i].sub_total);
+                    chat += ", costing";
+                    chat += jsonList[i].sub_total;
+                    sum_price += parseFloat(jsonList[i].sub_total);
                 }
-                chat += " , The total will be "+ sum_price+ " do you want to remove anything before checkout, please answer yes or no.";
+                chat += " , The final total will be "+ sum_price.toFixed(2)+ " do you want to remove anything before checkout, please answer yes or no.";
             }
             
             
