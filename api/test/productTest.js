@@ -55,7 +55,7 @@ describe("Unit test for endpoint regarding product",function(){
       // HTTP status should be 200
       res.status.should.equal(200);
       res.body.should.be.a('Number');
-      res.body.should.equal(4.2);
+      res.body.should.equal(5);
       done();
     });
   });

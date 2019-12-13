@@ -2,23 +2,30 @@ var mongoose = require('mongoose');
 
 var supertest = require("supertest");
 const chai = require('chai');
+const expect = chai.expect;
 const should = chai.should();
+const chaiHttp = require('chai-http');
 // This agent refers to PORT where program is runninng.
+chai.use(chaiHttp);
 
+const app = require('../../server.js');
 var server = supertest.agent("http://localhost:3000");
 
-
-// var Mockgoose = require('mockgoose').Mockgoose;
-
-
-// mock mongoose before requiring the script which establishes the connection (to mock the connection)
-// var mockgoose = new Mockgoose(mongoose);
-// require('../models/cartModel');
-var cart = require('../models/cartModel');
+var Cart = require('../models/cartModel');
 
 beforeEach(function(done) {
-  mongoose.connection.dropDatabase(done);
+  // console.log(mongoose.connection);
+  
+  mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/Shoppingdb',function(){
+      /* Drop the DB */
+      mongoose.connection.collections['carts'].drop( function(err) {
+        console.log('collection dropped');
+      });
+  });
+  done();
 });
+
+
 
 
 // UNIT test begin
@@ -27,19 +34,41 @@ describe("Unit test for endpoint regarding cart",function(){
 
   it("should return list of products in the cart",function(done){
 
-    server
-    .get("/cart")
-    .expect("Content-type",/json/)
-    .expect(200) // THis is HTTP response
-
-    .end(function(err,res){
-      // console.log(res.body);
-      // HTTP status should be 200
-      res.status.should.equal(200);
-      res.body.should.be.a('array');
-      done();
-    });
+    // it('Returns a 200 response', (done) => {
+    chai.request(app)
+        .get('/cart')
+        .end((error, response) => {
+            if (error) done(error);
+            console.log("test response");
+            console.log(response.body);
+            expect(response).to.have.status(200);
+            done();
+        });
   });
+
+
+  it('Creates a cart document in our DB', async() => {
+    return chai.request(app)
+        .post('/cart')
+        .send({
+            product_name: 'banana',
+            unit_number : 3
+        })
+        .then(async() => {
+            // console.log( Cart.find({}));
+            return Cart.find();
+        })
+        .then(async(result) => {
+          console.log(result);
+            expect(result).to.have.lengthOf(1);
+
+            const cart_result = result[0];
+            expect(cart_result.product_name).to.be.equal('banana');
+            expect(cart_result.unit_number).to.be.equal(3);
+            // expect(cart_result.sub_total).to.be.equal(15);
+            // done();/,
+        })
+});
 
   it("should add a new item to cart when the cart is empty",function(done){
 
@@ -50,86 +79,22 @@ describe("Unit test for endpoint regarding cart",function(){
     .expect("Content-type",/json/)
     .expect(200)
     .end(function(err,res){
-
+      // console.log(res.body);
       res.status.should.equal(200);
       res.body.product_name.should.equal("apple");
       res.body.unit_number.should.be.a('Number');
       res.body.unit_number.should.equal(2);
       res.body.sub_total.should.be.a('Number');
-      res.body.sub_total.should.equal(8.4)
+      res.body.sub_total.should.equal(10)
 
       done();
     });
   });
 
-  it("should update the unit_number and sub_total when the cart already exist apple",function(done){
 
-    server
-    .post('/cart')
-    .send({product_name: "apple",unit_number: 10})
-    .expect("Content-type",/json/)
-    .expect(200)
-    .end(function(err,res){
-
-      res.status.should.equal(200);
-      res.body.product_name.should.equal("apple");
-      res.body.unit_number.should.be.a('Number');
-      res.body.unit_number.should.equal(2);
-      res.body.sub_total.should.be.a('Number');
-      res.body.sub_total.should.equal(8.4)
-
-      done();
-    });
-  });
-
-  // it("should return price of apple(which is in database)",function(done){
-
-  //   // calling home page api
-  //   server
-  //   .get("/product/apple")
-  //   .expect("Content-type",/json/)
-  //   .expect(200) // THis is HTTP response
-
-  //   .end(function(err,res){
-  //     // HTTP status should be 200
-  //     res.status.should.equal(200);
-  //     res.body.should.equal(4.2);
-  //     done();
-  //   });
-  // });
-
-  // it("should return price of happy(which is not database)",function(done){
-
-  //   // calling home page api
-  //   server
-  //   .get("/product/happy")
-  //   .expect("Content-type",/json/)
-  //   .expect(200) // THis is HTTP response
-
-  //   .end(function(err,res){
-  //     // console.log(res.body);
-  //     // HTTP status should be 200
-  //     res.status.should.equal(200);
-  //     res.body.error.should.equal("product not in database");
-  //     done();
-  //   });
-  // });
-
-  // it("should add a new item ",function(done){
-
-  //   //calling ADD api
-  //   server
-  //   .post('/add')
-  //   .send({num1 : 10, num2 : 20})
-  //   .expect("Content-type",/json/)
-  //   .expect(200)
-  //   .end(function(err,res){
-  //     res.status.should.equal(200);
-  //     res.body.error.should.equal(false);
-  //     res.body.data.should.equal(40);
-  //     done();
-  //   });
-  // });
-
+after((done) => {
+  mongoose.disconnect();
+  done();
+});
 
 });

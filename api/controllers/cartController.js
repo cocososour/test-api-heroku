@@ -18,7 +18,7 @@ exports.list_all_carts = function(req, res) {
 
 exports.add_an_item = function(req, res) {
   console.log("POST REQUEST: add an item");
-  console.log(req.body);
+  // console.log(req.body);
   Product.findOne({product_name:(req.body.product_name.toLowerCase())}, function(err, task) {
     if (err)
       res.send(err);
@@ -26,8 +26,8 @@ exports.add_an_item = function(req, res) {
       res.send("No such item in databse");
       return;
     }
-    console.log(task);
-    console.log(req.body.unit_number);
+    // console.log(task);
+    // console.log(req.body.unit_number);
     var product_from_db = task.product_name;
     var unit = parseInt(req.body.unit_number);
     var sub_total = unit * task.product_price;
