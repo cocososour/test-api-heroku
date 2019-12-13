@@ -1,4 +1,4 @@
-process.env.NODE_ENV == 'test'
+var mongoose = require('mongoose');
 
 var supertest = require("supertest");
 const chai = require('chai');
@@ -8,36 +8,18 @@ const should = chai.should();
 var server = supertest.agent("http://localhost:3000");
 
 
-var Mockgoose = require('mockgoose').Mockgoose;
-var mongoose = require('mongoose');
+// var Mockgoose = require('mockgoose').Mockgoose;
+
 
 // mock mongoose before requiring the script which establishes the connection (to mock the connection)
-var mockgoose = new Mockgoose(mongoose);
-require('../models/cartModel');
+// var mockgoose = new Mockgoose(mongoose);
+// require('../models/cartModel');
 var cart = require('../models/cartModel');
 
-// beforeEach(function(done) {
-//   mockgoose.helper.reset();
-//   // create and insert two dummy docs
-//   // cart.model.create({ text: 'write blog on A' }, { text: 'write blog on B' }, function(err, blogOnA, blogOnB) {
-//   //   if(err) {
-//   //     console.log('Error creating documents in beforeEach: ' + error);
-//   //     throw(err);
-//   //   }
-//   //   done();
-//   // });
-//   done();
-// });
-
-before(function(done) {
-    // mockgoose.prepareStorage().then(function() {
-    //     mongoose.connect('mongodb://example.com/TestingDB', function(err) {
-    //         done(err);
-    //     });
-    // });
-    mockgoose.helper.reset();
-    done();
+beforeEach(function(done) {
+  mongoose.connection.dropDatabase(done);
 });
+
 
 // UNIT test begin
 
