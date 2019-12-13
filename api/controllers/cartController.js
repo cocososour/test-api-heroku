@@ -118,10 +118,26 @@ exports.add_an_item = function(req, res) {
 //User has to give the id
 exports.delete_all_cart = function(req, res) {
   console.log("DELETE REQUEST: delete everything in the cart");
-  
+  Cart.find({}, function(err, task) {
+    if (err) {
+      res.json({error: err, message: err});
+      console.log("err1");
+      return;
+    }
+    // if (task == null) {
+    //   res.json({error: "Nothing in cart", message: "Nothing in cart"});
+    //   // res.send("We are not selling this, please start from beginning, saying what do you want to buy");
+    //   return;
+    // }
+    // res.json(task);
+  });
+
   Cart.deleteMany({}, function(err, cart) {
-    if (err)
-      res.send(err);
+    if (err){
+      res.json({error: err, message: err});
+      console.log("err2");
+      return;
+    }
     res.json({ message: 'Everything in the cart deleted' });
   });
 };

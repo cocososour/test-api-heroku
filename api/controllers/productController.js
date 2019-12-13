@@ -17,15 +17,15 @@ exports.list_all_products = function(req, res) {
 
 
 //Why we need this?
-exports.create_a_product = function(req, res) {
-  var new_product = new Product(req.body);
-  console.log("POST REQUEST: create a product");
-  new_product.save(function(err, task) {
-    if (err)
-      res.send(err);
-    res.json(task);
-  });
-};
+// exports.create_a_product = function(req, res) {
+//   var new_product = new Product(req.body);
+//   console.log("POST REQUEST: create a product");
+//   new_product.save(function(err, task) {
+//     if (err)
+//       res.send(err);
+//     res.json(task);
+//   });
+// };
 
 exports.readTtemDetail = function(req, res) {
   //findById needs to be changed
@@ -35,6 +35,11 @@ exports.readTtemDetail = function(req, res) {
   Product.findOne({product_name:(req.params.product_name.toLowerCase())}, function(err, task) {
     if (err)
       res.send(err);
+    if (task == null) {
+      res.json({error: "product not in database", message: "We are not selling this, please start from beginning, saying what do you want to buy"});
+      // res.send("We are not selling this, please start from beginning, saying what do you want to buy");
+      return;
+    }
     console.log(task);
     res.json(task.product_price);
   });
