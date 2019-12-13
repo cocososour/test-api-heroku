@@ -20,10 +20,16 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
     const parameters = request.body.queryResult.parameters;
 
     var product_name = parameters['product'];
+    var unit_number = parameters['number-integer'];
     console.log("I can retrieve product name: " + product_name);
+    console.log("I can retrieve unit-number");
     
     switch(intent) {
         case ("check-product-price"):
+            if (unit_number <= 0) {
+                parameters['number-integer'] = None;
+                zero_product_wanted(response);
+            } 
             get_product_price(product_name, response);
             break;
         case ("add-to-shopping-cart - yes"):
@@ -47,7 +53,12 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
     // get_product_price(product_name, response);
 });
 
+function zero_product_wanted(CloudFnResponse) {
+    console.log("want zero product");
 
+    var chat = "Zero unit wanted, please try again. What do you want to buy today?" ;
+    CloudFnResponse.send(buildChatResponse(chat));
+}
 
 function add_product_cart(product_name_param, unit_number, CloudFnResponse) {
     console.log("add product to cart function");
@@ -165,8 +176,8 @@ function get_cart_list(CloudFnResponse) {
                     chat += jsonList[i].unit_number;
                     chat += " unit of "
                     chat += jsonList[i].product_name;
-                    chat += ", costing";
-                    chat += jsonList[i].sub_total;
+                    chat += ", costing ";
+                    chat += jsonList[i].sub_total +" , ";
                     sum_price += parseFloat(jsonList[i].sub_total);
                 }
                 chat += " , The final total will be "+ sum_price.toFixed(2)+ " do you want to remove anything before checkout, please answer yes or no.";

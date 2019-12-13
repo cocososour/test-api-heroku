@@ -1,9 +1,43 @@
+process.env.NODE_ENV == 'test'
+
 var supertest = require("supertest");
 const chai = require('chai');
 const should = chai.should();
 // This agent refers to PORT where program is runninng.
 
 var server = supertest.agent("http://localhost:3000");
+
+
+var Mockgoose = require('mockgoose').Mockgoose;
+var mongoose = require('mongoose');
+
+// mock mongoose before requiring the script which establishes the connection (to mock the connection)
+var mockgoose = new Mockgoose(mongoose);
+require('../models/cartModel');
+var cart = require('../models/cartModel');
+
+// beforeEach(function(done) {
+//   mockgoose.helper.reset();
+//   // create and insert two dummy docs
+//   // cart.model.create({ text: 'write blog on A' }, { text: 'write blog on B' }, function(err, blogOnA, blogOnB) {
+//   //   if(err) {
+//   //     console.log('Error creating documents in beforeEach: ' + error);
+//   //     throw(err);
+//   //   }
+//   //   done();
+//   // });
+//   done();
+// });
+
+before(function(done) {
+    // mockgoose.prepareStorage().then(function() {
+    //     mongoose.connect('mongodb://example.com/TestingDB', function(err) {
+    //         done(err);
+    //     });
+    // });
+    mockgoose.helper.reset();
+    done();
+});
 
 // UNIT test begin
 
@@ -58,9 +92,9 @@ describe("Unit test for endpoint regarding cart",function(){
       res.status.should.equal(200);
       res.body.product_name.should.equal("apple");
       res.body.unit_number.should.be.a('Number');
-      res.body.unit_number.should.equal(12);
+      res.body.unit_number.should.equal(2);
       res.body.sub_total.should.be.a('Number');
-      res.body.sub_total.should.equal(12*4.2)
+      res.body.sub_total.should.equal(8.4)
 
       done();
     });

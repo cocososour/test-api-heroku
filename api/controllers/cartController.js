@@ -149,7 +149,11 @@ exports.delete_an_item = function(req, res) {
   Cart.deleteOne({product_name:(req.body.product_name.toLowerCase())}, function(err, cart) {
     if (err)
       res.send(err);
-    res.json({ message: 'Task successfully deleted' });
+      if(cart.deletedCount >  0) {
+    res.json({ message: 'Task successfully deleted' });}
+    else {
+      res.json({ message: 'Task not deleted' });
+    }
   });
 };
 
