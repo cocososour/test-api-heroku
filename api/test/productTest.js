@@ -77,21 +77,4 @@ describe("Unit test for endpoint regarding product",function(){
     });
   });
 
-  // it("should add a new item ",function(done){
-
-  //   //calling ADD api
-  //   server
-  //   .post('/add')
-  //   .send({num1 : 10, num2 : 20})
-  //   .expect("Content-type",/json/)
-  //   .expect(200)
-  //   .end(function(err,res){
-  //     res.status.should.equal(200);
-  //     res.body.error.should.equal(false);
-  //     res.body.data.should.equal(40);
-  //     done();
-  //   });
-  // });
-
-
 });
